@@ -5,6 +5,7 @@ on:
     branches:
       - main
 
+# Deployment workflow for GitHub Pages
 permissions:
   contents: write
 
