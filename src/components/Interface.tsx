@@ -171,27 +171,11 @@ export function Interface() {
   const [showVideo, setShowVideo] = useState(false)
   const [isHovering, setIsHovering] = useState(false)
   const [isGlitching, setIsGlitching] = useState(false)
-  const [systemId, setSystemId] = useState('847392-H')
-  const [timestamp, setTimestamp] = useState('--:--:--')
-  const [statusIndex, setStatusIndex] = useState(0)
   const [isButtonGlitching, setIsButtonGlitching] = useState(false)
+  const [timestamp, setTimestamp] = useState('--:--:--')
 
   const letters = ['H', 'U', 'M', 'A', 'N']
   const colors = ['#ff9eb7', '#ff9eb7', '#b4a7ff', '#7dd2ff', '#7dd2ff']
-  
-  const systemStatuses = [
-    { text: "Running Integrity Protocols...", blink: true },
-    { text: "Verifying Neural Pathways...", blink: false },
-    { text: "Scanning Memory Blocks...", blink: false },
-    { text: "Analyzing Data Fragments...", blink: true },
-    { text: "Checking System Vitals...", blink: false },
-    { text: "Awaiting Authorization...", blink: true }
-  ]
-
-  const generateSystemId = () => {
-    const chars = '0123456789ABCDEF'
-    return Array(6).fill(0).map(() => chars[Math.floor(Math.random() * chars.length)]).join('') + '-H'
-  }
 
   const generateTimestamp = () => {
     const options = [
@@ -200,39 +184,12 @@ export function Interface() {
       'BUFFER_FULL',
       'OUT_OF_RANGE',
       'STACK_ERROR',
-      'SYNC_FAILED',
-      'DATA_CORRUPT',
-      'MEMORY_FAULT'
+      'SYNC_FAILED'
     ]
     return options[Math.floor(Math.random() * options.length)]
   }
 
   useEffect(() => {
-    // System ID rotation
-    const systemIdInterval = setInterval(() => {
-      setSystemId(Math.random() > 0.8 ? '[REDACTED]' : generateSystemId())
-    }, 10000)
-
-    // Status rotation
-    const statusInterval = setInterval(() => {
-      setStatusIndex(current => (current + 1) % systemStatuses.length)
-    }, 3000)
-
-    // Timestamp glitching
-    const timestampInterval = setInterval(() => {
-      if (Math.random() > 0.4) {
-        const glitchDuration = 1500
-        
-        setTimeout(() => {
-          setTimestamp(generateTimestamp())
-        }, 100)
-        
-        setTimeout(() => {
-          setTimestamp('--:--:--')
-        }, glitchDuration)
-      }
-    }, 3000)
-
     // Random glitch effect
     const glitchInterval = setInterval(() => {
       setIsGlitching(true)
@@ -248,11 +205,22 @@ export function Interface() {
       }, 2000)
     }
 
+    // Timestamp glitching
+    const timestampInterval = setInterval(() => {
+      if (Math.random() > 0.4) {
+        const glitchDuration = 1500
+        setTimeout(() => {
+          setTimestamp(generateTimestamp())
+        }, 100)
+        setTimeout(() => {
+          setTimestamp('--:--:--')
+        }, glitchDuration)
+      }
+    }, 3000)
+
     return () => {
-      clearInterval(systemIdInterval)
-      clearInterval(statusInterval)
-      clearInterval(timestampInterval)
       clearInterval(glitchInterval)
+      clearInterval(timestampInterval)
       if (buttonGlitchInterval) clearInterval(buttonGlitchInterval)
     }
   }, [isHovering])
@@ -267,11 +235,11 @@ export function Interface() {
         animate={{ opacity: [0.85, 1, 0.85] }}
         transition={{ duration: 4, repeat: Infinity }}
       >
-        SYSTEM_ID: <span className="font-medium tracking-[0.2em] text-[#ff9eb7]">{systemId}</span>
+        SYSTEM_ID: <span className="font-medium tracking-[0.2em] text-[#ff9eb7]">D70CE8-H</span>
       </motion.div>
       
       <motion.div 
-        className="flex flex-col items-center max-w-[600px] w-full px-6 mt-8"
+        className="flex flex-col items-center max-w-[600px] w-full px-6"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 1 }}
@@ -325,121 +293,61 @@ export function Interface() {
           </span>
         </motion.h1>
 
-        <motion.div
-          className="flex flex-col items-center gap-6 mb-20"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.4, duration: 0.8 }}
+        <motion.button
+          className="relative text-sm tracking-[0.2em] text-neutral-100 transition-all group mt-2 px-6 py-3"
+          onClick={() => setShowVideo(true)}
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.98 }}
+          onHoverStart={() => setIsHovering(true)}
+          onHoverEnd={() => setIsHovering(false)}
         >
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={statusIndex}
-              className="text-base tracking-[0.2em] text-[#ff9eb7]/90 font-light"
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              transition={{ duration: 0.3 }}
-            >
-              {systemStatuses[statusIndex].text}
-            </motion.div>
-          </AnimatePresence>
-
-          <motion.button
-            className="relative text-sm tracking-[0.2em] text-neutral-100 transition-all group mt-2 px-6 py-3"
-            onClick={() => setShowVideo(true)}
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-            onHoverStart={() => setIsHovering(true)}
-            onHoverEnd={() => setIsHovering(false)}
+          <motion.div
+            animate={isHovering ? {
+              color: '#ff9eb7',
+              opacity: 1,
+              x: isButtonGlitching ? [-1, 1, -1, 0] : 0
+            } : {
+              opacity: 1
+            }}
+            transition={{ 
+              duration: 0.3,
+              ease: [0.4, 0, 0.6, 1]
+            }}
+            className="flex flex-col items-center gap-3 relative"
           >
-            <motion.div
-              animate={isHovering ? {
-                color: '#ff9eb7',
-                opacity: 1,
-                x: isButtonGlitching ? [-1, 1, -1, 0] : 0
-              } : {
-                opacity: 1
-              }}
-              transition={{ 
-                duration: 0.3,
-                ease: [0.4, 0, 0.6, 1]
-              }}
-              className="flex flex-col items-center gap-3 relative"
-            >
-              <span className="flex items-center relative">
-                <motion.span
-                  animate={isButtonGlitching ? {
-                    x: [-1, 1, -0.5, 0.5, 0],
-                    filter: ["blur(0px)", "blur(1px)", "blur(0px)"]
-                  } : {}}
-                  transition={{ duration: 0.15 }}
-                  className="text-[#ff9eb7]/90 hover:text-[#ff9eb7] transition-colors duration-300"
-                >
-                  [INITIATE_VISUAL_LOG]
-                </motion.span>
-              </span>
-              <span className="text-[10px] tracking-[0.2em] text-neutral-300 group-hover:text-[#ff9eb7]/90 transition-all duration-300">
-                [ACCESS_LEVEL_2_REQUIRED]
-              </span>
-            </motion.div>
-          </motion.button>
-        </motion.div>
+            <span className="flex items-center relative">
+              <motion.span
+                animate={isButtonGlitching ? {
+                  x: [-1, 1, -0.5, 0.5, 0],
+                  filter: ["blur(0px)", "blur(1px)", "blur(0px)"]
+                } : {}}
+                transition={{ duration: 0.15 }}
+                className="text-[#ff9eb7]/90 hover:text-[#ff9eb7] transition-colors duration-300"
+              >
+                [INITIATE_VISUAL_LOG]
+              </motion.span>
+            </span>
+          </motion.div>
+        </motion.button>
       </motion.div>
 
-      <div className="absolute bottom-10 flex flex-col items-center gap-[14px]">
-        <motion.div 
-          className="text-xs tracking-[0.2em] text-neutral-300 flex items-center gap-3"
-          animate={{ opacity: [0.9, 1, 0.9] }}
-          transition={{ duration: 4, repeat: Infinity }}
-        >
-          <motion.span
-            animate={systemStatuses[statusIndex].blink ? {
-              opacity: [0.9, 1, 0.9]
-            } : {}}
-            transition={{
-              duration: 2,
-              repeat: Infinity,
-              repeatType: "reverse"
-            }}
-            className="font-light tracking-wider"
-          >
-            SYSTEM_STATUS: <span className="text-[#ff9eb7] font-normal">{systemStatuses[statusIndex].text}</span>
-          </motion.span>
-          <motion.span
-            animate={{ opacity: [0.5, 1, 0.5] }}
-            transition={{ duration: 1.5, repeat: Infinity }}
-            className="text-[#ff9eb7]"
-          >
-            •
-          </motion.span>
-        </motion.div>
-
-        <motion.div 
-          className="text-[11px] tracking-[0.2em] text-neutral-300 font-light"
-          animate={{ opacity: [0.85, 1, 0.85] }}
-          transition={{ duration: 3, repeat: Infinity }}
-        >
-          CRITICAL_LOGS: <span className="text-[#ff9eb7]">[REDACTED]</span>
-        </motion.div>
-
-        <motion.div 
-          className="text-xs tracking-[0.2em] text-neutral-300 font-light"
-          animate={{
-            opacity: timestamp !== 'Estimating...' ? [0.9, 1, 0.9] : [0.85, 0.95, 0.85],
-            scale: timestamp !== 'Estimating...' ? [1, 1.004, 1] : [1, 1, 1],
-            x: timestamp !== 'Estimating...' ? [-0.5, 0.5, 0] : 0
-          }}
-          transition={{
-            opacity: { duration: timestamp !== 'Estimating...' ? 0.4 : 2, repeat: Infinity },
-            scale: { duration: 1.5, repeat: Infinity, ease: "easeInOut" },
-            x: { duration: 0.3 }
-          }}
-        >
-          TIME_REMAINING: <span className={`font-normal ${timestamp !== '--:--:--' ? 'text-[#ff9eb7]' : 'text-[#ff9eb7]/90'}`}>
-            {timestamp === '--:--:--' ? 'Estimating...' : timestamp}
-          </span>
-        </motion.div>
-      </div>
+      <motion.div 
+        className="absolute bottom-8 text-xs tracking-[0.2em] text-neutral-300 font-light"
+        animate={{
+          opacity: timestamp !== '--:--:--' ? [0.9, 1, 0.9] : [0.85, 0.95, 0.85],
+          scale: timestamp !== '--:--:--' ? [1, 1.004, 1] : [1, 1, 1],
+          x: timestamp !== '--:--:--' ? [-0.5, 0.5, 0] : 0
+        }}
+        transition={{
+          opacity: { duration: timestamp !== '--:--:--' ? 0.4 : 2, repeat: Infinity },
+          scale: { duration: 1.5, repeat: Infinity, ease: "easeInOut" },
+          x: { duration: 0.3 }
+        }}
+      >
+        TIME_REMAINING: <span className={`font-normal ${timestamp !== '--:--:--' ? 'text-[#ff9eb7]' : 'text-[#ff9eb7]/90'}`}>
+          {timestamp === '--:--:--' ? 'Estimating...' : timestamp}
+        </span>
+      </motion.div>
 
       {showVideo && (
         <motion.div 
@@ -463,14 +371,6 @@ export function Interface() {
             >
               <source src="/1.mp4" type="video/mp4" />
             </video>
-            <motion.div
-              className="absolute top-4 left-4 text-xs tracking-[0.2em] text-white/60"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: [0, 1, 1, 0] }}
-              transition={{ duration: 4, times: [0, 0.1, 0.9, 1] }}
-            >
-              [AUDIO_ENABLED]
-            </motion.div>
             <motion.button 
               className="absolute top-4 right-4 text-sm tracking-[0.2em] text-white/80 hover:text-[#ff9eb7] transition-all px-3 py-2"
               onClick={() => setShowVideo(false)}
