@@ -170,13 +170,10 @@ function BlinkingCursor() {
 export function Interface() {
   const [showVideo, setShowVideo] = useState(false)
   const [isHovering, setIsHovering] = useState(false)
-  const [phraseIndex, setPhraseIndex] = useState(0)
   const [isGlitching, setIsGlitching] = useState(false)
-  const [loadingProgress, setLoadingProgress] = useState(0)
   const [systemId, setSystemId] = useState('847392-H')
   const [timestamp, setTimestamp] = useState('--:--:--')
   const [statusIndex, setStatusIndex] = useState(0)
-  const [isSignalWeak, setIsSignalWeak] = useState(false)
   const [isButtonGlitching, setIsButtonGlitching] = useState(false)
 
   const letters = ['H', 'U', 'M', 'A', 'N']
@@ -221,12 +218,10 @@ export function Interface() {
       setStatusIndex(current => (current + 1) % systemStatuses.length)
     }, 3000)
 
-    // Timestamp glitching - much more frequent and glitchy
+    // Timestamp glitching
     const timestampInterval = setInterval(() => {
-      if (Math.random() > 0.4) { // Even less frequent
-        // Create a rapid glitch effect
-        const glitchDuration = 1500 // Even slower
-        const numGlitches = 1 // Single glitch
+      if (Math.random() > 0.4) {
+        const glitchDuration = 1500
         
         setTimeout(() => {
           setTimestamp(generateTimestamp())
@@ -236,29 +231,13 @@ export function Interface() {
           setTimestamp('--:--:--')
         }, glitchDuration)
       }
-    }, 3000) // Much longer interval
-
-    // Loading bar animation
-    const loadingInterval = setInterval(() => {
-      setLoadingProgress(prev => {
-        if (prev >= 90) return 35
-        return prev + Math.random() * 2
-      })
-    }, 2000)
+    }, 3000)
 
     // Random glitch effect
     const glitchInterval = setInterval(() => {
       setIsGlitching(true)
       setTimeout(() => setIsGlitching(false), 200)
     }, 10000)
-
-    // Signal weakness simulation
-    const signalInterval = setInterval(() => {
-      if (Math.random() > 0.7) {
-        setIsSignalWeak(true)
-        setTimeout(() => setIsSignalWeak(false), 800)
-      }
-    }, 15000)
 
     // Button glitch effect on hover
     let buttonGlitchInterval: ReturnType<typeof setInterval> | null = null
@@ -269,25 +248,12 @@ export function Interface() {
       }, 2000)
     }
 
-    // Add glitch effect for HUMAN title
-    const titleGlitchInterval = setInterval(() => {
-      if (Math.random() > 0.3) { // 70% chance to trigger
-        setIsGlitching(true)
-        setTimeout(() => {
-          setIsGlitching(false)
-        }, 200) // Increased from 150ms to 200ms
-      }
-    }, 10000)
-
     return () => {
       clearInterval(systemIdInterval)
       clearInterval(statusInterval)
       clearInterval(timestampInterval)
-      clearInterval(loadingInterval)
       clearInterval(glitchInterval)
-      clearInterval(signalInterval)
       if (buttonGlitchInterval) clearInterval(buttonGlitchInterval)
-      clearInterval(titleGlitchInterval)
     }
   }, [isHovering])
 

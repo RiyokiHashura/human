@@ -12,7 +12,7 @@ interface FloatingObjectProps {
 const FloatingObject = ({ position, rotation, scale }: FloatingObjectProps) => {
   const mesh = useRef<THREE.Mesh>(null!)
   
-  useFrame((state) => {
+  useFrame((state: { clock: { getElapsedTime: () => number } }) => {
     const t = state.clock.getElapsedTime()
     mesh.current.rotation.x = Math.sin(t * 0.2) * 0.1 + rotation[0]
     mesh.current.rotation.y = Math.sin(t * 0.1) * 0.1 + rotation[1]
